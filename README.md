@@ -43,4 +43,4 @@ Projede aşağıdaki tablolar bulunmaktadır:
 
 ## Hazırlayan
 
-Sidar Demir
+Serdar VURAL
