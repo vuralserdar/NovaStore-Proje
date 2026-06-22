@@ -1,14 +1,3 @@
-/*
-    Proje: NovaStore E-Ticaret Veri Yonetim Sistemi
-    Hazirlayan: Sidar Demir
-    Platform: Microsoft SQL Server (T-SQL)
-*/
-
--- =========================================================
--- BOLUM 1: VERI TABANI TASARIMI (DDL)
--- =========================================================
-
--- Gorev 1: NovaStoreDB veri tabanini olusturma
 IF DB_ID('NovaStoreDB') IS NULL
 BEGIN
     CREATE DATABASE NovaStoreDB COLLATE Turkish_CI_AS;
@@ -18,7 +7,6 @@ GO
 USE NovaStoreDB;
 GO
 
--- Scriptin tekrar calistirilabilmesi icin once view ve tablolar silinir.
 IF OBJECT_ID('dbo.vw_SiparisOzet', 'V') IS NOT NULL
     DROP VIEW dbo.vw_SiparisOzet;
 GO
@@ -30,7 +18,6 @@ IF OBJECT_ID('dbo.Customers', 'U') IS NOT NULL DROP TABLE dbo.Customers;
 IF OBJECT_ID('dbo.Categories', 'U') IS NOT NULL DROP TABLE dbo.Categories;
 GO
 
--- A. Categories tablosu
 CREATE TABLE dbo.Categories
 (
     CategoryID   INT IDENTITY(1,1) NOT NULL,
@@ -41,7 +28,6 @@ CREATE TABLE dbo.Categories
 );
 GO
 
--- C. Customers tablosu (ana tablo oldugu icin Products ve Orders'tan once olusturulur)
 CREATE TABLE dbo.Customers
 (
     CustomerID INT IDENTITY(1,1) NOT NULL,
@@ -54,7 +40,6 @@ CREATE TABLE dbo.Customers
 );
 GO
 
--- B. Products tablosu
 CREATE TABLE dbo.Products
 (
     ProductID   INT IDENTITY(1,1) NOT NULL,
@@ -71,7 +56,6 @@ CREATE TABLE dbo.Products
 );
 GO
 
--- D. Orders tablosu
 CREATE TABLE dbo.Orders
 (
     OrderID     INT IDENTITY(1,1) NOT NULL,
@@ -86,7 +70,6 @@ CREATE TABLE dbo.Orders
 );
 GO
 
--- E. OrderDetails ara tablosu
 CREATE TABLE dbo.OrderDetails
 (
     DetailID INT IDENTITY(1,1) NOT NULL,
@@ -104,11 +87,6 @@ CREATE TABLE dbo.OrderDetails
 );
 GO
 
--- =========================================================
--- BOLUM 2: ORNEK VERI GIRISI (DML - INSERT)
--- =========================================================
-
--- Gorev 1: 5 kategori ekleme
 INSERT INTO dbo.Categories (CategoryName)
 VALUES
 (N'Elektronik'),
@@ -118,7 +96,6 @@ VALUES
 (N'Ev ve Yaşam');
 GO
 
--- Gorev 2: Toplam 12 urun ekleme
 INSERT INTO dbo.Products (ProductName, Price, Stock, CategoryID)
 VALUES
 (N'Dizüstü Bilgisayar',       28500.00,  8, 1),
@@ -135,7 +112,6 @@ VALUES
 (N'Masa Lambası',               690.00, 19, 5);
 GO
 
--- Gorev 3: 6 musteri ekleme
 INSERT INTO dbo.Customers (FullName, City, Email)
 VALUES
 (N'Ahmet Yılmaz',  N'İstanbul',  'ahmet.yilmaz@novastore.test'),
@@ -146,7 +122,6 @@ VALUES
 (N'Zeynep Koç',    N'Eskişehir', 'zeynep.koc@novastore.test');
 GO
 
--- Gorev 4: Farkli tarihlerde 10 siparis ekleme
 INSERT INTO dbo.Orders (CustomerID, OrderDate, TotalAmount)
 VALUES
 (1, '2026-06-01T10:15:00', 29280.00),
@@ -161,7 +136,6 @@ VALUES
 (4, '2026-06-20T18:00:00', 29850.00);
 GO
 
--- Siparislere ait detaylar
 INSERT INTO dbo.OrderDetails (OrderID, ProductID, Quantity)
 VALUES
 (1,  1, 1), (1,  7, 1),
@@ -176,7 +150,6 @@ VALUES
 (10, 1, 1), (10, 6, 3);
 GO
 
--- Veri tutarliligi kontrolu: detaylardan hesaplanan tutar ile Orders.TotalAmount karsilastirilir.
 SELECT
     o.OrderID,
     o.TotalAmount AS KayitliTutar,
@@ -192,11 +165,6 @@ GROUP BY o.OrderID, o.TotalAmount
 ORDER BY o.OrderID;
 GO
 
--- =========================================================
--- BOLUM 3: SORGULAMA VE ANALIZ (DQL)
--- =========================================================
-
--- Sorgu 1: Stogu 20'den az urunleri stok miktarina gore azalan siralama
 SELECT
     ProductName AS UrunAdi,
     Stock AS StokMiktari
@@ -205,7 +173,6 @@ WHERE Stock < 20
 ORDER BY Stock DESC;
 GO
 
--- Sorgu 2: Musteri, sehir, siparis tarihi ve toplam tutar raporu
 SELECT
     c.FullName AS MusteriAdi,
     c.City AS Sehir,
@@ -216,7 +183,6 @@ INNER JOIN dbo.Orders AS o ON o.CustomerID = c.CustomerID
 ORDER BY o.OrderDate;
 GO
 
--- Sorgu 3: Ahmet Yilmaz'in aldigi urunler, fiyatlari ve kategorileri
 SELECT
     p.ProductName AS UrunAdi,
     p.Price AS BirimFiyat,
@@ -230,7 +196,6 @@ WHERE c.FullName = N'Ahmet Yılmaz'
 ORDER BY o.OrderDate, p.ProductName;
 GO
 
--- Sorgu 4: Her kategoride kac urun bulundugu
 SELECT
     cat.CategoryName AS Kategori,
     COUNT(p.ProductID) AS UrunSayisi
@@ -240,7 +205,6 @@ GROUP BY cat.CategoryID, cat.CategoryName
 ORDER BY cat.CategoryName;
 GO
 
--- Sorgu 5: Her musterinin toplam cirosu; en cok harcayandan en aza
 SELECT
     c.CustomerID,
     c.FullName AS MusteriAdi,
@@ -251,7 +215,6 @@ GROUP BY c.CustomerID, c.FullName
 ORDER BY ToplamCiro DESC;
 GO
 
--- Sorgu 6: Siparislerin uzerinden kac gun gectigi
 SELECT
     OrderID,
     OrderDate AS SiparisTarihi,
@@ -260,7 +223,6 @@ FROM dbo.Orders
 ORDER BY OrderDate;
 GO
 
--- Ek ileri sorgu: Ortalama siparis tutarinin uzerindeki siparisler (Subquery)
 SELECT
     o.OrderID,
     c.FullName AS MusteriAdi,
@@ -272,11 +234,6 @@ WHERE o.TotalAmount > (SELECT AVG(TotalAmount) FROM dbo.Orders)
 ORDER BY o.TotalAmount DESC;
 GO
 
--- =========================================================
--- BOLUM 4: ILERI SEVIYE VERI TABANI NESNELERI
--- =========================================================
-
--- Gorev 1: vw_SiparisOzet gorunumunu olusturma
 CREATE VIEW dbo.vw_SiparisOzet
 AS
 SELECT
@@ -290,15 +247,11 @@ INNER JOIN dbo.OrderDetails AS od ON od.OrderID = o.OrderID
 INNER JOIN dbo.Products AS p ON p.ProductID = od.ProductID;
 GO
 
--- View'i test etme
 SELECT *
 FROM dbo.vw_SiparisOzet
 ORDER BY SiparisTarihi, MusteriAdi;
 GO
 
--- Gorev 2: NovaStoreDB veri tabanini C:\Yedek\ klasorune yedekleme
--- Not: C:\Yedek klasoru onceden olusturulmali ve SQL Server servis hesabinin
--- bu klasore yazma izni bulunmalidir.
 BACKUP DATABASE NovaStoreDB
 TO DISK = 'C:\Yedek\NovaStoreDB.bak'
 WITH
@@ -307,7 +260,6 @@ WITH
     STATS = 10;
 GO
 
--- Opsiyonel yedek dogrulama komutu
 RESTORE VERIFYONLY
 FROM DISK = 'C:\Yedek\NovaStoreDB.bak';
 GO
