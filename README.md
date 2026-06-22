@@ -4,9 +4,9 @@ Bu proje, SQL Server üzerinde ilişkisel veri tabanı tasarımı, tablo oluştu
 
 ## Proje İçeriği
 
-- `SidarDemir_NovaStore_Proje.sql`: Veritabanı oluşturma, tablolar, ilişkiler, örnek veriler, sorgular, view ve backup komutları.
-- `SidarDemir_NovaStore_Proje.docx`: Proje raporu, kod açıklamaları ve örnek sonuçlar.
-- `SidarDemir_NovaStore_Proje.png`: Veritabanı tablolarının ilişkisel şeması.
+- `Serdarural_NovaStore_Proje.sql`: Veritabanı oluşturma, tablolar, ilişkiler, örnek veriler, sorgular, view ve backup komutları.
+- `Serdarural_NovaStore_Proje.docx`: Proje raporu, kod açıklamaları ve örnek sonuçlar.
+- `Serdarural_NovaStore_Proje.png`: Veritabanı tablolarının ilişkisel şeması.
 
 ## Veritabanı Yapısı
 
@@ -35,7 +35,7 @@ Projede aşağıdaki tablolar bulunmaktadır:
 ## Çalıştırma
 
 1. SQL Server Management Studio'yu açın.
-2. `SidarDemir_NovaStore_Proje.sql` dosyasını açın.
+2. `Serdarural_NovaStore_Proje.sql` dosyasını açın.
 3. Scripti sırayla çalıştırın.
 4. Sonuç sorgularını çalıştırarak raporları görüntüleyin.
 
